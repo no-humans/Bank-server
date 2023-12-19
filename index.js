@@ -35,6 +35,13 @@ app.post("/register", (req, res) => {
 });
 
 // login
+app.post("/login", (req, res) => {
+  const result = dataservice.login(
+    req.body.acno,
+    req.body.psw
+  )
+  res.status(result.statusCode).json(result)
+})
 // deposit
 // withdraw
 // transaction history
