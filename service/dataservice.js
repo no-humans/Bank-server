@@ -110,8 +110,50 @@ deposit = (acno, password, amount) => {
   }
 };
 
+// withdraw
+
+withdraw=(acno, password, amount)=> {
+  var amnt = parseInt(amount);
+  if (acno in userDetails) {
+    if (password == userDetails[acno]['password']) {
+      if (amnt <= userDetails[acno]['balance']) {
+        userDetails[acno]['balance'] -= amnt;
+        userDetails[acno]['transaction'].push({
+          type: 'DEBIT',
+          amount: amnt,
+        });
+        return {
+          statusCode:200,
+          status:true,
+          message:userDetails[acno]['balance']
+        };
+      } else {
+        return {
+          statusCode:401,
+          status:false,
+          message:'Insufficent Balance'
+        };
+      }
+    } else {
+      
+      return{
+        statusCode:401,
+        status:false,
+        message:"Incorrect Password"
+      }
+    }
+  } else {
+    return {
+      statusCode:401,
+      status:false,
+      message:'Incorrect Account number'
+    };
+  }
+}
+
 module.exports = {
   register,
   login,
-  deposit
+  deposit,
+  withdraw
 };

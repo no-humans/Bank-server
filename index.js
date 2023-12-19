@@ -49,6 +49,14 @@ app.post("/deposit", (req, res) => {
   res.status(result.statusCode).json(result);
 });
 // withdraw
+app.post("/withdraw", (req, res) => {
+  const result = dataservice.withdraw(
+    req.body.acno,
+    req.body.psw,
+    req.body.amount
+  );
+  res.status(result.statusCode).json(result);
+});
 // transaction history
 // delete
 
