@@ -54,6 +54,9 @@ register = (uname, acno, psw) => {
     };
   }
 };
+
+// login
+
 login = (acno, psw) => {
   if (acno in userDetails) {
     if (psw == userDetails[acno]["password"]) {
@@ -78,7 +81,37 @@ login = (acno, psw) => {
   }
 };
 
+// Deposit
+
+deposit = (acno, password, amount) => {
+  var amnt = parseInt(amount);
+  if (acno in userDetails) {
+    if (password == userDetails[acno]["password"]) {
+      userDetails[acno]["balance"] += amnt;
+      userDetails[acno]["transaction"].push({ type: "CREDIT", amount: amnt });
+      return {
+        statusCode:200,
+        status:true,
+        message:userDetails[acno]["balance"]
+      }
+    } else {
+      return {
+        statusCode:401,
+        status:false,
+        message:'Incorrect password'
+      };
+    }
+  } else {
+    return {
+      statusCode:401,
+      status:false,
+      message:"incorrect acccount number"
+    };
+  }
+};
+
 module.exports = {
   register,
   login,
+  deposit
 };

@@ -22,8 +22,8 @@ app.post("/register", (req, res) => {
     req.body.uname,
     req.body.acno,
     req.body.psw
-  )
-  res.status(result.statusCode).json(result)
+  );
+  res.status(result.statusCode).json(result);
   // if (result){
   //   res.send("Registration  success")
   // }
@@ -36,13 +36,18 @@ app.post("/register", (req, res) => {
 
 // login
 app.post("/login", (req, res) => {
-  const result = dataservice.login(
-    req.body.acno,
-    req.body.psw
-  )
-  res.status(result.statusCode).json(result)
-})
+  const result = dataservice.login(req.body.acno, req.body.psw);
+  res.status(result.statusCode).json(result);
+});
 // deposit
+app.post("/deposit", (req, res) => {
+  const result = dataservice.deposit(
+    req.body.acno,
+    req.body.psw,
+    req.body.amount
+  );
+  res.status(result.statusCode).json(result);
+});
 // withdraw
 // transaction history
 // delete
