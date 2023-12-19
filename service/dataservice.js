@@ -90,70 +90,86 @@ deposit = (acno, password, amount) => {
       userDetails[acno]["balance"] += amnt;
       userDetails[acno]["transaction"].push({ type: "CREDIT", amount: amnt });
       return {
-        statusCode:200,
-        status:true,
-        message:userDetails[acno]["balance"]
-      }
+        statusCode: 200,
+        status: true,
+        message: userDetails[acno]["balance"],
+      };
     } else {
       return {
-        statusCode:401,
-        status:false,
-        message:'Incorrect password'
+        statusCode: 401,
+        status: false,
+        message: "Incorrect password",
       };
     }
   } else {
     return {
-      statusCode:401,
-      status:false,
-      message:"incorrect acccount number"
+      statusCode: 401,
+      status: false,
+      message: "incorrect acccount number",
     };
   }
 };
 
 // withdraw
 
-withdraw=(acno, password, amount)=> {
+withdraw = (acno, password, amount) => {
   var amnt = parseInt(amount);
   if (acno in userDetails) {
-    if (password == userDetails[acno]['password']) {
-      if (amnt <= userDetails[acno]['balance']) {
-        userDetails[acno]['balance'] -= amnt;
-        userDetails[acno]['transaction'].push({
-          type: 'DEBIT',
+    if (password == userDetails[acno]["password"]) {
+      if (amnt <= userDetails[acno]["balance"]) {
+        userDetails[acno]["balance"] -= amnt;
+        userDetails[acno]["transaction"].push({
+          type: "DEBIT",
           amount: amnt,
         });
         return {
-          statusCode:200,
-          status:true,
-          message:userDetails[acno]['balance']
+          statusCode: 200,
+          status: true,
+          message: userDetails[acno]["balance"],
         };
       } else {
         return {
-          statusCode:401,
-          status:false,
-          message:'Insufficent Balance'
+          statusCode: 401,
+          status: false,
+          message: "Insufficent Balance",
         };
       }
     } else {
-      
-      return{
-        statusCode:401,
-        status:false,
-        message:"Incorrect Password"
-      }
+      return {
+        statusCode: 401,
+        status: false,
+        message: "Incorrect Password",
+      };
     }
   } else {
     return {
-      statusCode:401,
-      status:false,
-      message:'Incorrect Account number'
+      statusCode: 401,
+      status: false,
+      message: "Incorrect Account number",
     };
   }
-}
+};
+
+gettransaction = (acno) => {
+  if (acno in userDetails) {
+    return {
+      statusCode: 200,
+      status: true,
+      message: userDetails[acno]["transaction"],
+    };
+  } else {
+    return {
+      statusCode: 401,
+      status: false,
+      message: "Incorrect Account number",
+    };
+  }
+};
 
 module.exports = {
   register,
   login,
   deposit,
-  withdraw
+  withdraw,
+  gettransaction,
 };

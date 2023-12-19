@@ -58,6 +58,12 @@ app.post("/withdraw", (req, res) => {
   res.status(result.statusCode).json(result);
 });
 // transaction history
+app.post("/transaction", (req, res) => {
+  const result = dataservice.gettransaction(
+    req.body.acno
+  );
+  res.status(result.statusCode).json(result);
+});
 // delete
 
 // GET
