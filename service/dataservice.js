@@ -1,3 +1,8 @@
+// import jwt
+
+
+const jwt=require('jsonwebtoken')
+
 userDetails = {
   1000: {
     acno: 1000,
@@ -60,10 +65,12 @@ register = (uname, acno, psw) => {
 login = (acno, psw) => {
   if (acno in userDetails) {
     if (psw == userDetails[acno]["password"]) {
+      const token=jwt.sign({currentAcno:acno},'secretkeynotfind4532')
       return {
         statusCode: 200,
         status: true,
         message: "Login success",
+        token
       };
     } else {
       return {

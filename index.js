@@ -1,6 +1,10 @@
 // import dataservice file from service folder
 const dataservice = require("./service/dataservice");
 
+// import jsonwebtoken
+
+const jwt = require("jsonwebtoken");
+
 // to import express
 
 const express = require("express");
@@ -13,7 +17,17 @@ const app = express();
 
 app.use(express.json());
 
-// request
+// middleware to verify token
+
+const jwtMiddleware = (req, res, next) => {
+  console.log("jwtMiddleware");
+  const token = req.body.token;
+  const data = jwt.verify(token, "secretkeynotfind4532");
+  console.log(data);
+  next();
+};
+
+// requests
 
 // register
 
@@ -40,7 +54,7 @@ app.post("/login", (req, res) => {
   res.status(result.statusCode).json(result);
 });
 // deposit
-app.post("/deposit", (req, res) => {
+app.post("/deposit", jwtMiddleware, (req, res) => {
   const result = dataservice.deposit(
     req.body.acno,
     req.body.psw,
@@ -48,7 +62,9 @@ app.post("/deposit", (req, res) => {
   );
   res.status(result.statusCode).json(result);
 });
+
 // withdraw
+
 app.post("/withdraw", (req, res) => {
   const result = dataservice.withdraw(
     req.body.acno,
@@ -57,11 +73,11 @@ app.post("/withdraw", (req, res) => {
   );
   res.status(result.statusCode).json(result);
 });
+
 // transaction history
+
 app.post("/transaction", (req, res) => {
-  const result = dataservice.gettransaction(
-    req.body.acno
-  );
+  const result = dataservice.gettransaction(req.body.acno);
   res.status(result.statusCode).json(result);
 });
 // delete
