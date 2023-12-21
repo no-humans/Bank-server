@@ -21,10 +21,18 @@ app.use(express.json());
 
 const jwtMiddleware = (req, res, next) => {
   console.log("jwtMiddleware");
-  const token = req.body.token;
-  const data = jwt.verify(token, "secretkeynotfind4532");
-  console.log(data);
-  next();
+  try {
+    const token = req.body.token;
+    const data = jwt.verify(token, "secretkeynotfind4532");
+    console.log(data);
+    next();
+  } catch {
+    res.status(401).json({
+      statusCode: 401,
+      status: false,
+      message: "Login to Continue",
+    });
+  }
 };
 
 // requests
@@ -65,7 +73,7 @@ app.post("/deposit", jwtMiddleware, (req, res) => {
 
 // withdraw
 
-app.post("/withdraw", (req, res) => {
+app.post("/withdraw", jwtMiddleware, (req, res) => {
   const result = dataservice.withdraw(
     req.body.acno,
     req.body.psw,
@@ -76,7 +84,7 @@ app.post("/withdraw", (req, res) => {
 
 // transaction history
 
-app.post("/transaction", (req, res) => {
+app.post("/transaction", jwtMiddleware, (req, res) => {
   const result = dataservice.gettransaction(req.body.acno);
   res.status(result.statusCode).json(result);
 });
