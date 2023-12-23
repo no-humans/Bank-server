@@ -1,3 +1,19 @@
+// env
+const dotenv = require("dotenv");
+dotenv.config();
+
+// mongodb connection
+const mongoose = require("mongoose");
+
+mongoose
+  .connect(process.env.MONGO)
+  .then(() => {
+    console.log("connected to MongoDB");
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+
 // import dataservice file from service folder
 const dataservice = require("./service/dataservice");
 
@@ -22,7 +38,7 @@ app.use(express.json());
 const jwtMiddleware = (req, res, next) => {
   console.log("jwtMiddleware");
   try {
-    const token = req.body.token;
+    const token = req.headers["access-token"];
     const data = jwt.verify(token, "secretkeynotfind4532");
     console.log(data);
     next();
