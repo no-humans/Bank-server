@@ -1,7 +1,10 @@
+// import db.js
+
+const db = require("./db");
+
 // import jwt
 
-
-const jwt=require('jsonwebtoken')
+const jwt = require("jsonwebtoken");
 
 userDetails = {
   1000: {
@@ -35,42 +38,113 @@ userDetails = {
 };
 
 // register
+// const register = async (uname, acno, psw) => {
+//   try {
+//     const user = await db.User.findOne({ acno });
 
-register = (uname, acno, psw) => {
-  if (acno in userDetails) {
-    return {
-      statusCode: 401,
+//     if (user) {
+//       return {
+//         statusCode: 401,
+//         status: false,
+//         message: "User already exists",
+//       };
+//     } else {
+//       const newUser = new db.User({
+//         acno,
+//         username: uname,
+//         password: psw,
+//         balance: 0,
+//         transaction: [],
+//       });
+
+//       await newUser.save();
+//       console.log("User registered in MongoDB:", newUser);
+
+//       return {
+//         statusCode: 200,
+//         status: true,
+//         message: "Registration success",
+//       };
+//     }
+//   } catch (error) {
+//     console.error("Error during registration:", error);
+//     throw {
+//       statusCode: 500,
+//       status: false,
+//       message: "Internal server error",
+//     };
+//   }
+// };
+
+register = async (uname, acno, psw) => {
+  try {
+    const user = await db.User.findOne({ acno });
+    if (user) {
+      return {
+        statusCode: 401,
+        status: false,
+        message: "user already exist",
+      };
+    } else {
+      const newUser = new db.User({
+        acno,
+        username: uname,
+        password: psw,
+        balance: 0,
+        transaction: [],
+      });
+      newUser.save();
+      console.log("User registered in MongoDB:", newUser);
+      return {
+        statusCode: 200,
+        status: true,
+        message: "Registration success",
+      };
+    }
+  } catch (error) {
+    console.error("Error during registration:", error);
+    throw {
+      statusCode: 500,
       status: false,
-      message: "user already exist",
-    };
-  } else {
-    userDetails[acno] = {
-      acno,
-      username: uname,
-      password: psw,
-      balance: 0,
-      transaction: [],
-    };
-    console.log(userDetails);
-    return {
-      statusCode: 200,
-      status: true,
-      message: "Registration success",
+      message: "Internal server error",
     };
   }
 };
+
+//   if (acno in userDetails) {
+//     return {
+//       statusCode: 401,
+//       status: false,
+//       message: "user already exist",
+//     };
+//   } else {
+//     userDetails[acno] = {
+//       acno,
+//       username: uname,
+//       password: psw,
+//       balance: 0,
+//       transaction: [],
+//     };
+//     console.log(userDetails);
+//     return {
+//       statusCode: 200,
+//       status: true,
+//       message: "Registration success",
+//     };
+//   }
+// };
 
 // login
 
 login = (acno, psw) => {
   if (acno in userDetails) {
     if (psw == userDetails[acno]["password"]) {
-      const token=jwt.sign({currentAcno:acno},'secretkeynotfind4532')
+      const token = jwt.sign({ currentAcno: acno }, "secretkeynotfind4532");
       return {
         statusCode: 200,
         status: true,
         message: "Login success",
-        token
+        token,
       };
     } else {
       return {

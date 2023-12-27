@@ -6,7 +6,7 @@ dotenv.config();
 const mongoose = require("mongoose");
 
 mongoose
-  .connect(process.env.MONGO)
+  .connect(process.env.MONGO_URI)
   .then(() => {
     console.log("connected to MongoDB");
   })
@@ -54,14 +54,33 @@ const jwtMiddleware = (req, res, next) => {
 // requests
 
 // register
+app.post("/register", async (req, res) => {
+  try {
+    const result = await dataservice.register(req.body.uname, req.body.acno, req.body.psw);
 
-app.post("/register", (req, res) => {
-  const result = dataservice.register(
-    req.body.uname,
-    req.body.acno,
-    req.body.psw
-  );
-  res.status(result.statusCode).json(result);
+    if (!result) {
+      throw new Error("Registration result is undefined");
+    }
+
+    res.status(result.statusCode).json(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "An error occurred" });
+  }
+});
+
+
+// app.post("/register", (req, res) => {
+//   dataservice
+//     .register(req.body.uname, req.body.acno, req.body.psw)
+//     .then(result => {
+//       res.status(result.statusCode).json(result);
+//     })
+//     .catch((error) => {
+//       // Handle registration error
+//       console.error(error);
+//       res.status(500).json({ error: "Registration failed" });
+//     });
   // if (result){
   //   res.send("Registration  success")
   // }
@@ -70,7 +89,7 @@ app.post("/register", (req, res) => {
   // }
   // res.send("success");
   // console.log(req.body);
-});
+// });
 
 // login
 app.post("/login", (req, res) => {
