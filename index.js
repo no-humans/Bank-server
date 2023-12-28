@@ -85,13 +85,22 @@ app.post("/login", async (req, res) => {
   }
 });
 
-
-app.post("/deposit", jwtMiddleware, (req, res) => {
-  dataservice
-    .deposit(req.body.acno, req.body.psw, req.body.amount)
-    .then((result) => {
-      res.status(result.statusCode).json(result);
+app.post("/deposit", jwtMiddleware, async (req, res) => {
+  try {
+    const result = await dataservice.deposit(
+      req.body.acno,
+      req.body.psw,
+      req.body.amount
+    );
+    res.status(result.statusCode).json(result);
+  } catch (error) {
+    console.error("An error occured during deposit:", error);
+    res.status(500).json({
+      statusCode: 500,
+      status: false,
+      message: "internal server error",
     });
+  }
 });
 
 // withdraw
