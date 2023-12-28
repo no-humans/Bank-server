@@ -91,11 +91,15 @@ app.post("/register", async (req, res) => {
   // console.log(req.body);
 // });
 
+
 // login
 app.post("/login", (req, res) => {
-  const result = dataservice.login(req.body.acno, req.body.psw);
-  res.status(result.statusCode).json(result);
+  dataservice.login(req.body.acno, req.body.psw).then(result=>{
+    res.status(result.statusCode).json(result);
+  })
 });
+
+
 // deposit
 app.post("/deposit", jwtMiddleware, (req, res) => {
   const result = dataservice.deposit(

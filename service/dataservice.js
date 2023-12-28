@@ -137,8 +137,8 @@ register = async (uname, acno, psw) => {
 // login
 
 login = (acno, psw) => {
-  if (acno in userDetails) {
-    if (psw == userDetails[acno]["password"]) {
+  return db.User.findOne({acno,password:psw}).then(user=>{
+    if(user){
       const token = jwt.sign({ currentAcno: acno }, "secretkeynotfind4532");
       return {
         statusCode: 200,
@@ -146,21 +146,17 @@ login = (acno, psw) => {
         message: "Login success",
         token,
       };
-    } else {
+    }
+    else{
       return {
         statusCode: 401,
         status: false,
-        message: "Incorrect password",
+        message: "Incorrect account number or password",
       };
     }
-  } else {
-    return {
-      statusCode: 401,
-      status: false,
-      message: "Incorrect account number",
-    };
-  }
+  })
 };
+
 
 // Deposit
 
