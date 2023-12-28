@@ -68,8 +68,8 @@ register = async (uname, acno, psw) => {
 };
 
 login = (acno, psw) => {
-  return db.User.findOne({acno,password:psw}).then(user=>{
-    if(user){
+  return db.User.findOne({ acno, password: psw }).then((user) => {
+    if (user) {
       const token = jwt.sign({ currentAcno: acno }, "secretkeynotfind4532");
       return {
         statusCode: 200,
@@ -77,15 +77,14 @@ login = (acno, psw) => {
         message: "Login success",
         token,
       };
-    }
-    else{
+    } else {
       return {
         statusCode: 401,
         status: false,
         message: "Incorrect account number or password",
       };
     }
-  })
+  });
 };
 
 deposit = async (acno, password, amount) => {
@@ -121,63 +120,40 @@ deposit = async (acno, password, amount) => {
   }
 };
 
-// deposit = (acno, password, amount) => {
-//   var amnt = parseInt(amount);
-//   return db.User.findOne({acno,password}).then(user=>{
-//     if(user){
-//       user.balance += amnt;
-//       user.transaction.push({ type: "CREDIT", amount: amnt })
-//       user.save();
-//       return {
-//         statusCode: 200,
-//         status: true,
-//         message: `${user.balance}`
-//       };
-//     }
-//       else{
-//       return {
-//         statusCode: 401,
-//         status: false,
-//         message: "Incorrect password or account number",
-//       };
-//     }
-//   })
-// };
-
 withdraw = async (acno, password, amount) => {
-  var amnt = parseInt(amount);
-  if (acno in userDetails) {
-    if (password == userDetails[acno]["password"]) {
-      if (amnt <= userDetails[acno]["balance"]) {
-        userDetails[acno]["balance"] -= amnt;
-        userDetails[acno]["transaction"].push({
-          type: "DEBIT",
-          amount: amnt,
-        });
-        return {
-          statusCode: 200,
-          status: true,
-          message: userDetails[acno]["balance"],
-        };
-      } else {
+  try {
+    var amnt = parseInt(amount);
+    var user = await db.User.findOne({ acno, password });
+    if (user) {
+      if (amnt > user.balance) {
         return {
           statusCode: 401,
           status: false,
           message: "Insufficent Balance",
+        };
+      } else {
+        user.balance -= amnt;
+        user.transaction.push({ type: "DEBIT", amount: amnt });
+        user.save();
+        return {
+          statusCode: 200,
+          status: true,
+          message: user.balance,
         };
       }
     } else {
       return {
         statusCode: 401,
         status: false,
-        message: "Incorrect Password",
+        message: "Incorrect Password or account number",
       };
     }
-  } else {
+  } catch (error) {
+    console.error("An error occured during withdraw:", error);
     return {
-      statusCode: 401,
+      statusCode: 500,
       status: false,
-      message: "Incorrect Account number",
+      message: "Internal server error",
     };
   }
 };

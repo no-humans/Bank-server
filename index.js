@@ -87,7 +87,7 @@ app.post("/login", async (req, res) => {
 
 app.post("/deposit", jwtMiddleware, async (req, res) => {
   try {
-    const result = await dataservice.deposit(
+    var result = await dataservice.deposit(
       req.body.acno,
       req.body.psw,
       req.body.amount
@@ -105,19 +105,28 @@ app.post("/deposit", jwtMiddleware, async (req, res) => {
 
 // withdraw
 
-app.post("/withdraw", jwtMiddleware, (req, res) => {
-  const result = dataservice.withdraw(
-    req.body.acno,
-    req.body.psw,
-    req.body.amount
-  );
-  res.status(result.statusCode).json(result);
+app.post("/withdraw", jwtMiddleware, async (req, res) => {
+  try {
+    var result = await dataservice.withdraw(
+      req.body.acno,
+      req.body.psw,
+      req.body.amount
+    );
+    res.status(result.statusCode).json(result);
+  } catch (error) {
+    console.error("An error occcured during withdraw:", error);
+    res.status(500).json({
+      statusCode: 500,
+      status: false,
+      message: "Internal server error",
+    });
+  }
 });
 
 // transaction history
 
 app.post("/transaction", jwtMiddleware, (req, res) => {
-  const result = dataservice.gettransaction(req.body.acno);
+  var result = dataservice.gettransaction(req.body.acno);
   res.status(result.statusCode).json(result);
 });
 // delete
