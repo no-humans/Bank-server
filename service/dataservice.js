@@ -158,18 +158,28 @@ withdraw = async (acno, password, amount) => {
   }
 };
 
-gettransaction = (acno) => {
-  if (acno in userDetails) {
+gettransaction = async (acno) => {
+  try {
+    var user = await db.User.findOne({acno});
+    if (user) {
+      return {
+        statusCode: 200,
+        status: true,
+        message: user.transaction,
+      };
+    } else {
+      return {
+        statusCode: 401,
+        status: false,
+        message: "Incorrect Account number",
+      };
+    }
+  } catch (error) {
+    console.error("An error occured during fetching transaction;", error);
     return {
-      statusCode: 200,
-      status: true,
-      message: userDetails[acno]["transaction"],
-    };
-  } else {
-    return {
-      statusCode: 401,
+      statusCode: 500,
       status: false,
-      message: "Incorrect Account number",
+      message: "Internal server error",
     };
   }
 };

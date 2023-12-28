@@ -125,9 +125,18 @@ app.post("/withdraw", jwtMiddleware, async (req, res) => {
 
 // transaction history
 
-app.post("/transaction", jwtMiddleware, (req, res) => {
-  var result = dataservice.gettransaction(req.body.acno);
-  res.status(result.statusCode).json(result);
+app.post("/transaction", jwtMiddleware, async (req, res) => {
+  try {
+    var result = await dataservice.gettransaction(req.body.acno);
+    res.status(result.statusCode).json(result);
+  } catch (error) {
+    console.error("An error occured during fetching transaction:", error);
+    res.status(500).json({
+      statusCode: 500,
+      status: false,
+      message: "Internal server error",
+    });
+  }
 });
 // delete
 
