@@ -51,12 +51,13 @@ const jwtMiddleware = (req, res, next) => {
   }
 };
 
-// requests
-
-// register
 app.post("/register", async (req, res) => {
   try {
-    const result = await dataservice.register(req.body.uname, req.body.acno, req.body.psw);
+    const result = await dataservice.register(
+      req.body.uname,
+      req.body.acno,
+      req.body.psw
+    );
 
     if (!result) {
       throw new Error("Registration result is undefined");
@@ -69,45 +70,28 @@ app.post("/register", async (req, res) => {
   }
 });
 
-
-// app.post("/register", (req, res) => {
-//   dataservice
-//     .register(req.body.uname, req.body.acno, req.body.psw)
-//     .then(result => {
-//       res.status(result.statusCode).json(result);
-//     })
-//     .catch((error) => {
-//       // Handle registration error
-//       console.error(error);
-//       res.status(500).json({ error: "Registration failed" });
-//     });
-  // if (result){
-  //   res.send("Registration  success")
-  // }
-  // else{
-  //   res.send("user already exist")
-  // }
-  // res.send("success");
-  // console.log(req.body);
-// });
-
-
-// login
-app.post("/login", (req, res) => {
-  dataservice.login(req.body.acno, req.body.psw).then(result=>{
+app.post("/login", async (req, res) => {
+  try {
+    const result = await dataservice.login(req.body.acno, req.body.psw);
     res.status(result.statusCode).json(result);
-  })
+  } catch (error) {
+    // Handle any unexpected errors here
+    console.error("An error occurred during login:", error);
+    res.status(500).json({
+      statusCode: 500,
+      status: false,
+      message: "Internal Server Error",
+    });
+  }
 });
 
 
-// deposit
 app.post("/deposit", jwtMiddleware, (req, res) => {
-  const result = dataservice.deposit(
-    req.body.acno,
-    req.body.psw,
-    req.body.amount
-  );
-  res.status(result.statusCode).json(result);
+  dataservice
+    .deposit(req.body.acno, req.body.psw, req.body.amount)
+    .then((result) => {
+      res.status(result.statusCode).json(result);
+    });
 });
 
 // withdraw

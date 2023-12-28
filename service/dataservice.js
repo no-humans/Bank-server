@@ -1,9 +1,4 @@
-// import db.js
-
 const db = require("./db");
-
-// import jwt
-
 const jwt = require("jsonwebtoken");
 
 userDetails = {
@@ -36,45 +31,6 @@ userDetails = {
     transaction: [],
   },
 };
-
-// register
-// const register = async (uname, acno, psw) => {
-//   try {
-//     const user = await db.User.findOne({ acno });
-
-//     if (user) {
-//       return {
-//         statusCode: 401,
-//         status: false,
-//         message: "User already exists",
-//       };
-//     } else {
-//       const newUser = new db.User({
-//         acno,
-//         username: uname,
-//         password: psw,
-//         balance: 0,
-//         transaction: [],
-//       });
-
-//       await newUser.save();
-//       console.log("User registered in MongoDB:", newUser);
-
-//       return {
-//         statusCode: 200,
-//         status: true,
-//         message: "Registration success",
-//       };
-//     }
-//   } catch (error) {
-//     console.error("Error during registration:", error);
-//     throw {
-//       statusCode: 500,
-//       status: false,
-//       message: "Internal server error",
-//     };
-//   }
-// };
 
 register = async (uname, acno, psw) => {
   try {
@@ -111,31 +67,6 @@ register = async (uname, acno, psw) => {
   }
 };
 
-//   if (acno in userDetails) {
-//     return {
-//       statusCode: 401,
-//       status: false,
-//       message: "user already exist",
-//     };
-//   } else {
-//     userDetails[acno] = {
-//       acno,
-//       username: uname,
-//       password: psw,
-//       balance: 0,
-//       transaction: [],
-//     };
-//     console.log(userDetails);
-//     return {
-//       statusCode: 200,
-//       status: true,
-//       message: "Registration success",
-//     };
-//   }
-// };
-
-// login
-
 login = (acno, psw) => {
   return db.User.findOne({acno,password:psw}).then(user=>{
     if(user){
@@ -157,39 +88,63 @@ login = (acno, psw) => {
   })
 };
 
+deposit = async (acno, password, amount) => {
+  try {
+    var amnt = parseInt(amount);
+    var user = await db.User.findOne({ acno, password });
 
-// Deposit
+    if (user) {
+      user.balance += amnt;
+      user.transaction.push({ type: "CREDIT", amount: amnt });
+      await user.save();
 
-deposit = (acno, password, amount) => {
-  var amnt = parseInt(amount);
-  if (acno in userDetails) {
-    if (password == userDetails[acno]["password"]) {
-      userDetails[acno]["balance"] += amnt;
-      userDetails[acno]["transaction"].push({ type: "CREDIT", amount: amnt });
       return {
         statusCode: 200,
         status: true,
-        message: userDetails[acno]["balance"],
+        message: `${user.balance}`,
       };
     } else {
       return {
         statusCode: 401,
         status: false,
-        message: "Incorrect password",
+        message: "Incorrect password or account number",
       };
     }
-  } else {
+  } catch (error) {
+    // Handle any unexpected errors here
+    console.error("An error occurred during deposit:", error);
     return {
-      statusCode: 401,
+      statusCode: 500,
       status: false,
-      message: "incorrect acccount number",
+      message: "Internal Server Error",
     };
   }
 };
 
-// withdraw
+// deposit = (acno, password, amount) => {
+//   var amnt = parseInt(amount);
+//   return db.User.findOne({acno,password}).then(user=>{
+//     if(user){
+//       user.balance += amnt;
+//       user.transaction.push({ type: "CREDIT", amount: amnt })
+//       user.save();
+//       return {
+//         statusCode: 200,
+//         status: true,
+//         message: `${user.balance}`
+//       };
+//     }
+//       else{
+//       return {
+//         statusCode: 401,
+//         status: false,
+//         message: "Incorrect password or account number",
+//       };
+//     }
+//   })
+// };
 
-withdraw = (acno, password, amount) => {
+withdraw = async (acno, password, amount) => {
   var amnt = parseInt(amount);
   if (acno in userDetails) {
     if (password == userDetails[acno]["password"]) {
