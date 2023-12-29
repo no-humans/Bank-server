@@ -1,3 +1,7 @@
+// import cors
+
+const cors=require('cors')
+
 // env
 const dotenv = require("dotenv");
 dotenv.config();
@@ -28,6 +32,10 @@ const express = require("express");
 // create app
 
 const app = express();
+
+// connect frontend
+
+app.use(cors({origin:'http://localhost:4200'}))
 
 // To covert json data
 
