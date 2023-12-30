@@ -148,6 +148,12 @@ app.post("/transaction", jwtMiddleware, async (req, res) => {
 });
 // delete
 
+app.delete('/deleteacc/:acno',jwtMiddleware,(req,res)=>{
+  dataservice.acdelete(req.params.acno).then(result=>{
+    res.status(result.statusCode).json(result);
+  })
+})
+
 // GET
 
 // app.get("", (req, res) => res.send("get method checking......"));

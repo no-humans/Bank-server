@@ -154,6 +154,24 @@ gettransaction = async (acno) => {
     };
   }
 };
+acdelete=(acno)=>{
+  return db.User.deleteOne({acno}).then((user)=>{
+    if(user){
+      return {
+        statusCode: 200,
+        status: true,
+        message: 'Account deleted',
+      }
+    }
+    else{
+      return{
+        statusCode:401,
+        status:false,
+        message:'Incorrect account number'
+      }
+    }
+  })
+}
 
 module.exports = {
   register,
@@ -161,4 +179,5 @@ module.exports = {
   deposit,
   withdraw,
   gettransaction,
+  acdelete
 };
