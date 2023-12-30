@@ -1,37 +1,6 @@
 const db = require("./db");
 const jwt = require("jsonwebtoken");
 
-userDetails = {
-  1000: {
-    acno: 1000,
-    username: "anu",
-    password: 123,
-    balance: 0,
-    transaction: [],
-  },
-  1001: {
-    acno: 1001,
-    username: "john",
-    password: 123,
-    balance: 0,
-    transaction: [],
-  },
-  1002: {
-    acno: 1002,
-    username: "Rengoku",
-    password: 123,
-    balance: 0,
-    transaction: [],
-  },
-  1003: {
-    acno: 1003,
-    username: "wick",
-    password: 123,
-    balance: 0,
-    transaction: [],
-  },
-};
-
 register = async (uname, acno, psw) => {
   try {
     const user = await db.User.findOne({ acno });
@@ -75,6 +44,8 @@ login = (acno, psw) => {
         statusCode: 200,
         status: true,
         message: "Login success",
+        currentAcno: acno,
+        currentUser: user.username,
         token,
       };
     } else {
@@ -160,7 +131,7 @@ withdraw = async (acno, password, amount) => {
 
 gettransaction = async (acno) => {
   try {
-    var user = await db.User.findOne({acno});
+    var user = await db.User.findOne({ acno });
     if (user) {
       return {
         statusCode: 200,
